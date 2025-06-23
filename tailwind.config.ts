@@ -80,6 +80,7 @@ const config: Config = {
           },
         },
         orange: {
+          dark: "#F59460",
           light: {
             DEFAULT: "#F59460",
           },

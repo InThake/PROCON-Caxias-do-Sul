@@ -14,11 +14,10 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NextAdmin - Next.js Dashboard Kit",
-    default: "NextAdmin - Next.js Dashboard Kit",
+    template: "Dashboard - CXJ PROCON",
+    default: "Dashboard - CXJ PROCON",
   },
-  description:
-    "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+  description: "Dashboard - CXJ PROCON",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
@@ -26,7 +25,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
-          <NextTopLoader color="#5750F1" showSpinner={false} />
+          <NextTopLoader color="#eb8c10" showSpinner={true} />
 
           <div className="flex min-h-screen">
             <Sidebar />
