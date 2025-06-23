@@ -35,11 +35,11 @@ export function Header() {
       )}
 
       <div className="max-xl:hidden">
-        <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
+        <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-blue-700">
           Dashboard
         </h1>
         <p className="font-medium">
-          Plataforma de Gerenciamento - PROCON Caxias do Sul{" "}
+          Plataforma de Gerenciamento - PROCON Caxias do Sul
         </p>
       </div>
 
