@@ -22,6 +22,16 @@ export default async function Home({ searchParams }: PropsType) {
 
   return (
     <>
+      {/* Header with Caxias branding */}
+      <div className="mb-6 rounded-[10px] bg-gradient-to-r from-caxias-green to-caxias-blue p-6 text-white shadow-1">
+        <h1 className="text-heading-3 font-bold">
+          Dashboard PROCON Caxias do Sul
+        </h1>
+        <p className="mt-2 text-caxias-green-50">
+          Sistema de monitoramento e gestão de atendimentos
+        </p>
+      </div>
+
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />
       </Suspense>
@@ -56,6 +66,16 @@ export default async function Home({ searchParams }: PropsType) {
         <Suspense fallback={null}>
           <ChatsCard />
         </Suspense>
+      </div>
+
+      {/* Footer with municipal info */}
+      <div className="mt-8 rounded-[10px] bg-caxias-silver-50 p-4 text-center">
+        <p className="text-sm text-caxias-silver-dark">
+          Prefeitura Municipal de Caxias do Sul - PROCON
+        </p>
+        <p className="text-xs text-caxias-silver">
+          Rua Visconde de Pelotas, 449 - Centro - Caxias do Sul/RS
+        </p>
       </div>
     </>
   );

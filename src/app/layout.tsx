@@ -14,10 +14,10 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "Dashboard - CXJ PROCON",
-    default: "Dashboard - CXJ PROCON",
+    template: "PROCON Caxias do Sul - %s",
+    default: "PROCON Caxias do Sul - Dashboard",
   },
-  description: "Dashboard - CXJ PROCON",
+  description: "Dashboard de gerenciamento do PROCON Caxias do Sul",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

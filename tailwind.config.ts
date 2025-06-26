@@ -18,9 +18,75 @@ const config: Config = {
         current: "currentColor",
         transparent: "transparent",
         white: "#FFFFFF",
-        primary: "#5750F1",
+        // Updated primary to Caxias green
+        primary: "#2D5930", // Caxias municipal green
         stroke: "#E6EBF1",
         "stroke-dark": "#27303E",
+
+        // Caxias municipal colors
+        caxias: {
+          green: {
+            DEFAULT: "#2D5930", // Municipal green
+            light: "#4A7C4F",
+            dark: "#1F3F22",
+            50: "#F1F8F2",
+            100: "#E0F0E1",
+            200: "#C2E1C5",
+            300: "#94CA9A",
+            400: "#5EAE67",
+            500: "#2D5930",
+            600: "#245025",
+            700: "#1F421F",
+            800: "#1A361B",
+            900: "#162E17",
+          },
+          blue: {
+            DEFAULT: "#1E4A72", // Municipal blue (blou)
+            light: "#2E5A82",
+            dark: "#143652",
+            50: "#F0F6FB",
+            100: "#E0EDF7",
+            200: "#C0DAEF",
+            300: "#8FC0E4",
+            400: "#5BA6D8",
+            500: "#1E4A72",
+            600: "#1A3F61",
+            700: "#163551",
+            800: "#122C41",
+            900: "#0F2534",
+          },
+          purple: {
+            DEFAULT: "#6B2C91", // Municipal purple (púrpura)
+            light: "#7B3CA1",
+            dark: "#5B1C81",
+            50: "#F7F1FB",
+            100: "#EFE3F7",
+            200: "#DFC7EF",
+            300: "#C79DE3",
+            400: "#A768D3",
+            500: "#6B2C91",
+            600: "#5C2579",
+            700: "#4D1F65",
+            800: "#3E1A52",
+            900: "#331543",
+          },
+          silver: {
+            DEFAULT: "#8E9AAF", // Municipal silver (argente)
+            light: "#A5B1C6",
+            dark: "#778398",
+            50: "#F8F9FB",
+            100: "#F1F3F7",
+            200: "#E3E7EF",
+            300: "#D0D6E3",
+            400: "#B8C0D1",
+            500: "#8E9AAF",
+            600: "#7A869C",
+            700: "#677289",
+            800: "#545F76",
+            900: "#464F63",
+          },
+        },
+
         dark: {
           DEFAULT: "#111928",
           2: "#1F2A37",
@@ -43,17 +109,17 @@ const config: Config = {
           7: "#374151",
         },
         green: {
-          DEFAULT: "#22AD5C",
-          dark: "#1A8245",
+          DEFAULT: "#2D5930", // Updated to Caxias green
+          dark: "#1F3F22",
           light: {
-            DEFAULT: "#2CD673",
-            1: "#10B981",
-            2: "#57DE8F",
-            3: "#82E6AC",
-            4: "#ACEFC8",
-            5: "#C2F3D6",
-            6: "#DAF8E6",
-            7: "#E9FBF0",
+            DEFAULT: "#4A7C4F",
+            1: "#5EAE67",
+            2: "#78B97D",
+            3: "#94CA9A",
+            4: "#B0DBB6",
+            5: "#CCE6D1",
+            6: "#E0F0E1",
+            7: "#F1F8F2",
           },
         },
         red: {
@@ -69,14 +135,14 @@ const config: Config = {
           },
         },
         blue: {
-          DEFAULT: "#3C50E0",
-          dark: "#1C3FB7",
+          DEFAULT: "#1E4A72", // Updated to Caxias blue
+          dark: "#143652",
           light: {
-            DEFAULT: "#5475E5",
-            2: "#8099EC",
-            3: "#ADBCF2",
-            4: "#C3CEF6",
-            5: "#E1E8FF",
+            DEFAULT: "#2E5A82",
+            2: "#4A7099",
+            3: "#6686B0",
+            4: "#829CC7",
+            5: "#B8CCE3",
           },
         },
         orange: {
