@@ -3,8 +3,6 @@ import "@/css/style.css";
 
 import { Sidebar } from "@/components/Layouts/sidebar";
 
-import "jsvectormap/dist/jsvectormap.css";
-
 import { Header } from "@/components/Layouts/header";
 import type { Metadata } from "next";
 import NextTopLoader from "nextjs-toploader";

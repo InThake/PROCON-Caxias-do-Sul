@@ -1,5 +1,5 @@
 {
-  "name": "free-nextadmin-nextjs",
+  "name": "procon-caxias-do-sul-dashboard",
   "version": "1.2.1",
   "private": true,
   "scripts": {
@@ -28,6 +28,7 @@
     "nextjs-toploader": "^3.7.15",
     "react": "19.0.0",
     "react-apexcharts": "^1.7.0",
+    "react-day-picker": "^9.7.0",
     "react-dom": "19.0.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"

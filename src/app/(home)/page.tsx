@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import { ChatsCard } from "./_components/chats-card";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
-import { RegionLabels } from "./_components/region-labels";
+import CaxiasDoSulMap from './_components/region-labels';
 
 type PropsType = {
   searchParams: Promise<{
@@ -55,7 +55,7 @@ export default async function Home({ searchParams }: PropsType) {
           timeFrame={extractTimeFrame("used_devices")?.split(":")[1]}
         />
 
-        <RegionLabels />
+        <CaxiasDoSulMap />
 
         <div className="col-span-12 grid xl:col-span-8">
           <Suspense fallback={<TopChannelsSkeleton />}>
