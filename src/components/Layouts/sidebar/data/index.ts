@@ -1,37 +1,52 @@
-import * as Icons from "../icons";
+import {
+  Calendar,
+  Home,
+  User,
+  ClipboardCheck,
+  Table,
+  Columns3,
+  PieChart,
+  Fingerprint,
+  TriangleDashed,
+  ClipboardCopy,
+  ListTodo,
+} from "lucide-react";
 
 export const NAV_DATA = [
   {
-    label: "MAIN MENU",
+    label: "MENU",
     items: [
       {
         title: "Dashboard",
-        icon: Icons.HomeIcon,
-        items: [
-          {
-            title: "eCommerce",
-            url: "/",
-          },
-        ],
+        url: "/",
+        icon: Home,
+        items: [],
       },
       {
-        title: "Calendar",
+        title: "Reclamações",
+        url: "/reclamacoes",
+        icon: ListTodo,
+        items: [],
+      },
+      {
+        title: "Calendário",
         url: "/calendar",
-        icon: Icons.Calendar,
+        icon:  Calendar,
         items: [],
       },
       {
-        title: "Profile",
+        title: "Perfil",
         url: "/profile",
-        icon: Icons.User,
+        icon: User,
         items: [],
       },
       {
-        title: "Forms",
-        icon: Icons.Alphabet,
+        title: "Formulários",
+        icon: ClipboardCheck,
         items: [
           {
-            title: "Form Elements",
+            title: "Elementos do Formulário",
+            icon: ClipboardCopy,
             url: "/forms/form-elements",
           },
           {
@@ -41,19 +56,19 @@ export const NAV_DATA = [
         ],
       },
       {
-        title: "Tables",
+        title: "Tabelas",
         url: "/tables",
-        icon: Icons.Table,
+        icon: Table,
         items: [
           {
-            title: "Tables",
+            title: "Tabelas",
             url: "/tables",
           },
         ],
       },
       {
         title: "Pages",
-        icon: Icons.Alphabet,
+        icon: Columns3,
         items: [
           {
             title: "Settings",
@@ -64,21 +79,21 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: "OTHERS",
+    label: "Outros",
     items: [
       {
-        title: "Charts",
-        icon: Icons.PieChart,
+        title: "Gráficos",
+        icon: PieChart,
         items: [
           {
-            title: "Basic Chart",
+            title: "Gráfico Básico",
             url: "/charts/basic-chart",
           },
         ],
       },
       {
         title: "UI Elements",
-        icon: Icons.FourCircle,
+        icon: TriangleDashed,
         items: [
           {
             title: "Alerts",
@@ -92,7 +107,7 @@ export const NAV_DATA = [
       },
       {
         title: "Authentication",
-        icon: Icons.Authentication,
+        icon: Fingerprint,
         items: [
           {
             title: "Sign In",

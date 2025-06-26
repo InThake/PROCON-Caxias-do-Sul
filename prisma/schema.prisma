@@ -1,0 +1,608 @@
+// This schema is designed for PostgreSQL
+// Adjust accordingly if using MySQL or another database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// AUTH.JS REQUIRED MODELS
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+
+  // Multi-tenant relationships
+  memberships OrganizationMember[]
+
+  // Auth.js relationships
+  accounts      Account[]
+  sessions      Session[]
+  authenticator Authenticator[]
+
+  // Activity tracking
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastSeenAt DateTime?
+
+  // User preferences and settings
+  preferences Json?  @default("{}")
+  timezone    String @default("America/Sao_Paulo")
+  locale      String @default("pt-BR")
+
+  // Audit relationships
+  auditLogs AuditLog[]
+  Consumer  Consumer[]
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([expires])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@index([expires])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+// ============================================
+// MULTI-TENANT CORE MODELS
+// ============================================
+
+model Organization {
+  id      String  @id @default(cuid())
+  name    String
+  slug    String  @unique
+  logo    String?
+  website String?
+
+  // Organization settings
+  settings Json     @default("{}")
+  features String[] @default([])
+
+  // Billing information
+  billingEmail         String?
+  billingPlan          BillingPlan @default(FREE)
+  billingPeriodStart   DateTime?
+  billingPeriodEnd     DateTime?
+  stripeCustomerId     String?     @unique
+  stripeSubscriptionId String?     @unique
+
+  // Status
+  status OrganizationStatus @default(ACTIVE)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  members      OrganizationMember[]
+  consumers    Consumer[]
+  companies    Company[]
+  complaints   Complaint[]
+  apiKeys      ApiKey[]
+  webhooks     Webhook[]
+  auditLogs    AuditLog[]
+  featureFlags FeatureFlag[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrganizationMember {
+  id             String     @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MemberRole @default(MEMBER)
+
+  // Member settings
+  permissions String[] @default([])
+
+  // Timestamps
+  joinedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+  @@index([role])
+}
+
+// ============================================
+// CONSUMER PROFILE & IDENTIFICATION
+// ============================================
+
+model Consumer {
+  id             String  @id @default(cuid())
+  organizationId String
+  userId         String? // Link to User model when they register
+
+  // Personal information
+  fullName         String
+  cpf              String
+  birthDate        DateTime?
+  email            String
+  phoneNumber      String
+  alternativePhone String?
+
+  // WhatsApp identification
+  whatsappUserId String? @unique // WhatsApp user ID for linking
+
+  // Address
+  addressCep        String?
+  addressNumber     String?
+  addressStreet     String?
+  addressDistrict   String?
+  addressCity       String?
+  addressState      String?
+  addressComplement String?
+
+  // Status
+  verified Boolean @default(false)
+  active   Boolean @default(true)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  complaints   Complaint[]
+
+  @@unique([organizationId, cpf])
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@index([userId])
+  @@index([cpf])
+  @@index([whatsappUserId])
+}
+
+// ============================================
+// COMPANY/SUPPLIER MANAGEMENT
+// ============================================
+
+model Company {
+  id             String @id @default(cuid())
+  organizationId String
+
+  // Company information
+  cnpj      String
+  legalName String
+  tradeName String?
+
+  // Contact information
+  email       String?
+  phoneNumber String?
+  website     String?
+
+  // Address
+  addressCep        String?
+  addressNumber     String?
+  addressStreet     String?
+  addressDistrict   String?
+  addressCity       String?
+  addressState      String?
+  addressComplement String?
+
+  // Status
+  active   Boolean @default(true)
+  verified Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  complaints   Complaint[]
+
+  @@unique([organizationId, cnpj])
+  @@index([organizationId])
+  @@index([cnpj])
+  @@index([tradeName])
+}
+
+// ============================================
+// COMPLAINT/CLAIM MANAGEMENT
+// ============================================
+
+model Complaint {
+  id             String @id @default(cuid())
+  organizationId String
+  consumerId     String
+  companyId      String
+
+  // Complaint details
+  protocolNumber String            @unique
+  category       ComplaintCategory
+  subcategory    String?
+  purchaseDate   DateTime?
+  value          Decimal?          @db.Decimal(10, 2)
+
+  // Description and evidence
+  description String                @db.Text
+  attachments ComplaintAttachment[]
+
+  // Status tracking
+  status   ComplaintStatus   @default(SUBMITTED)
+  priority ComplaintPriority @default(NORMAL)
+
+  // Assignment
+  assignedToId String?
+
+  // Resolution
+  resolution         String?   @db.Text
+  resolvedAt         DateTime?
+  satisfactionRating Int?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  consumer     Consumer            @relation(fields: [consumerId], references: [id])
+  company      Company             @relation(fields: [companyId], references: [id])
+  timeline     ComplaintTimeline[]
+  messages     ComplaintMessage[]
+
+  @@index([organizationId])
+  @@index([consumerId])
+  @@index([companyId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+}
+
+model ComplaintTimeline {
+  id          String @id @default(cuid())
+  complaintId String
+
+  // Event details
+  action        ComplaintAction
+  description   String
+  performedById String?
+
+  // Metadata
+  metadata Json?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relationships
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  @@index([complaintId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model ComplaintMessage {
+  id          String @id @default(cuid())
+  complaintId String
+
+  // Message details
+  sender     MessageSender
+  senderName String
+  content    String        @db.Text
+
+  // WhatsApp integration
+  whatsappMessageId String? @unique
+
+  // Visibility
+  internal Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relationships
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  @@index([complaintId])
+  @@index([sender])
+  @@index([createdAt])
+}
+
+model ComplaintAttachment {
+  id          String @id @default(cuid())
+  complaintId String
+
+  // File details
+  fileName String
+  fileType String
+  fileSize Int
+  fileUrl  String
+
+  // Metadata
+  uploadedBy String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relationships
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  @@index([complaintId])
+}
+
+// ============================================
+// API & SECURITY MODELS
+// ============================================
+
+model ApiKey {
+  id             String @id @default(cuid())
+  organizationId String
+
+  // Key details
+  name      String
+  key       String   @unique
+  keyPrefix String // First 8 characters for identification
+  scopes    String[] @default([])
+
+  // Usage tracking
+  lastUsedAt DateTime?
+  usageCount Int       @default(0)
+
+  // Status
+  status    ApiKeyStatus @default(ACTIVE)
+  expiresAt DateTime?
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  revokedAt DateTime?
+
+  // Relationships
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([key])
+  @@index([keyPrefix])
+  @@index([status])
+}
+
+model Webhook {
+  id             String @id @default(cuid())
+  organizationId String
+
+  // Webhook configuration
+  url     String
+  events  String[] @default([])
+  headers Json?    @default("{}")
+  secret  String
+
+  // Status
+  status WebhookStatus @default(ACTIVE)
+
+  // Delivery tracking
+  consecutiveFailures Int       @default(0)
+  lastDeliveryAt      DateTime?
+  lastDeliveryStatus  String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([status])
+}
+
+// ============================================
+// AUDIT & COMPLIANCE MODELS
+// ============================================
+
+model AuditLog {
+  id             String  @id @default(cuid())
+  organizationId String
+  userId         String?
+
+  // Event details
+  action     String
+  entityType String
+  entityId   String
+
+  // Change tracking
+  oldValues Json?
+  newValues Json?
+
+  // Request context
+  ipAddress String?
+  userAgent String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relationships
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ============================================
+// FEATURE FLAGS
+// ============================================
+
+model FeatureFlag {
+  id             String  @id @default(cuid())
+  organizationId String? // Null means global flag
+
+  // Flag details
+  key         String
+  enabled     Boolean @default(false)
+  description String?
+
+  // Rollout configuration
+  rolloutPercentage Int?  @default(0)
+  conditions        Json? @default("{}")
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, key])
+  @@index([key])
+  @@index([enabled])
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum BillingPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum OrganizationStatus {
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum WebhookStatus {
+  ACTIVE
+  PAUSED
+  FAILED
+}
+
+enum ComplaintCategory {
+  AIR_TRANSPORT
+  INTERNET_PURCHASE
+  DELIVERY_DELAY
+  COMPLAINT
+  BANKING_FINANCE
+  TELEPHONY
+  CONTRACT_CANCELLATION
+  OTHER
+}
+
+enum ComplaintStatus {
+  SUBMITTED
+  IN_ANALYSIS
+  WAITING_CONSUMER_RESPONSE
+  WAITING_COMPANY_RESPONSE
+  IN_MEDIATION
+  RESOLVED
+  NOT_RESOLVED
+  ARCHIVED
+  CANCELLED
+}
+
+enum ComplaintPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ComplaintAction {
+  CREATED
+  STATUS_CHANGED
+  ASSIGNED
+  MESSAGE_SENT
+  MESSAGE_RECEIVED
+  ATTACHMENT_ADDED
+  RESOLVED
+  REOPENED
+  CANCELLED
+}
+
+enum MessageSender {
+  CONSUMER
+  COMPANY
+  AGENT
+  SYSTEM
+}

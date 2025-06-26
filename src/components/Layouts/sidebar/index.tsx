@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA } from "./data";
-import { ArrowLeftIcon, ChevronUp } from "./icons";
+import { ArrowLeft, ChevronUp } from "lucide-react";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 
@@ -80,7 +80,7 @@ export function Sidebar() {
               >
                 <span className="sr-only">Close Menu</span>
 
-                <ArrowLeftIcon className="ml-auto size-7" />
+                <ArrowLeft className="ml-auto size-7" />
               </button>
             )}
           </div>
@@ -124,7 +124,7 @@ export function Sidebar() {
 
                             {expandedItems.includes(item.title) && (
                               <ul
-                                className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
+                                className="ml-9 mr-0 flex flex-col space-y-1.5 pb-[15px] pr-0 pt-2"
                                 role="menu"
                               >
                                 {item.items.map((subItem) => (
@@ -133,7 +133,12 @@ export function Sidebar() {
                                       as="link"
                                       href={subItem.url}
                                       isActive={pathname === subItem.url}
+                                      className="flex items-center gap-2"
                                     >
+                                      <item.icon
+                                        className="size-5 shrink-0"
+                                        aria-hidden="true"
+                                      />
                                       <span>{subItem.title}</span>
                                     </MenuItem>
                                   </li>
